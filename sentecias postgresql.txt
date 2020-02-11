@@ -1,0 +1,229 @@
+create sequence estacion_sec;
+create table estacionamientos(
+est_id int default nextval('estacion_sec') primary key,
+est_total int,
+est_clientes int,
+est_horas int
+);
+
+
+create sequence admin_sec;
+create table admin(
+id int default nextval('admin_sec') primary key,
+  nombre text,
+  apellido text,
+  correo text,
+  pass text
+);
+
+create table cliente_hora(
+placa varchar(10) primary key,
+ci varchar(50),
+cod_barras varchar(200),
+tipo_vehiculo varchar(200),
+fecha date
+);
+
+CREATE TABLE cliente_mes(
+  ci varchar(50) primary key NOT NULL,
+  nombre text NOT NULL,
+  apellido text NOT NULL,
+  telefono text,
+  direccion text,
+  placa text NOT NULL,
+  modelo text,
+  color text,
+  cod_barras varchar(200)
+);
+create sequence ent_sec;
+create table entradas(
+id int default nextval('ent_sec') primary key,
+ci  varchar(50),
+placa varchar(10),
+cod_barras varchar(200),
+hora_llegada time,
+hora_salida time,
+fecha date,
+estado varchar(50)
+);
+
+create sequence pag_sec;
+create table pagos(
+id int default nextval('pag_sec') primary key,
+cod_barras varchar(200),
+horas int,
+tota float,
+fecha date,
+tipo_cliente varchar(200),
+id_entrada int
+);
+
+alter table pagos add constraint fk_id_entrada foreign key (id_entrada) references entradas(id) on delete cascade on update cascade;
+
+alter table entradas add constraint fkci foreign key (ci) references cliente_mes(ci) on delete cascade on update cascade;
+alter table entradas add constraint fk_placa foreign key (placa) references cliente_hora(placa) on delete cascade on update cascade;
+
+create sequence enth_sec;
+create table entradashoras(
+id int default nextval('enth_sec') primary key,
+ci  varchar(50),
+placa varchar(10),
+cod_barras varchar(200),
+hora_llegada time,
+hora_salida time,
+fecha date,
+estado varchar(50)
+);
+
+
+create sequence pagh_sec;
+create table pagoshoras(
+id int default nextval('pagh_sec') primary key,
+cod_barras varchar(200),
+horas int,
+tota float,
+fecha date,
+tipo_cliente varchar(200),
+id_entrada int
+);
+
+alter table entradashoras add constraint fkci foreign key (ci) references cliente_mes(ci) on delete cascade on update cascade;
+
+alter table pagoshoras add constraint fk_id_entrada foreign key (id_entrada) references entradashoras(id) on delete cascade on update cascade;
+
+
+
+
+
+eliminar cliente hora nueva 
+
+
+
+create sequence clihoras_sec;
+create table cliente_hora(
+id int default nextval('clihoras_sec') primary key,
+ci varchar(10),
+placa varchar(50),
+cod_barras varchar(200),
+tipo_vehiculo varchar(200),
+fecha date
+);
+
+create sequence enth3_sec;
+create table entradashoras(
+id int default nextval('enth3_sec') primary key,
+id_hora  int,
+placa varchar(10),
+cod_barras varchar(200),
+hora_llegada varchar(50),
+hora_salida varchar(50),
+fecha date,
+estado varchar(50)
+);
+
+
+create sequence pagh3_sec;
+create table pagoshoras(
+id int default nextval('pagh3_sec') primary key,
+cod_barras varchar(200),
+horas int,
+tota float,
+fecha date,
+tipo_cliente varchar(200),
+id_entrada int
+);
+
+alter table entradashoras add constraint fkci foreign key (id_hora) references cliente_hora(id) on delete cascade on update cascade;
+
+alter table pagoshoras add constraint fk_id_entrada foreign key (id_entrada) references entradashoras(id) on delete cascade on update cascade;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+create table cliente_hora(
+ci varchar(10) primary key,
+placa varchar(50),
+cod_barras varchar(200),
+tipo_vehiculo varchar(200),
+fecha date
+);
+
+create sequence enth_sec;
+create table entradashoras(
+id int default nextval('enth_sec') primary key,
+ci  varchar(50),
+placa varchar(10),
+cod_barras varchar(200),
+hora_llegada time,
+hora_salida time,
+fecha date,
+estado varchar(50)
+);
+
+
+create sequence pagh_sec;
+create table pagoshoras(
+id int default nextval('pagh_sec') primary key,
+cod_barras varchar(200),
+horas int,
+tota float,
+fecha date,
+tipo_cliente varchar(200),
+id_entrada int
+);
+
+alter table entradashoras add constraint fkci foreign key (ci) references cliente_hora(ci) on delete cascade on update cascade;
+
+alter table pagoshoras add constraint fk_id_entrada foreign key (id_entrada) references entradashoras(id) on delete cascade on update cascade;
+
+
+
+
+
+consultas postgres para verificar clientes que hayan ingresado al parqueadero
+
+SELECT cliente_mes.cod_barras, cliente_mes.ci,cliente_mes.nombre,cliente_mes.apellido,cliente_mes.placa FROM cliente_mes, entradas WHERE cliente_mes.ci = '1750474049' AND entradas.estado ='Entrada' AND entradas.ci = cliente_mes.ci;
+
+
+
+
+buscar los registros de entradas de un cliente registrado
+
+SELECT cliente_mes.cod_barras, cliente_mes.ci,cliente_mes.nombre,cliente_mes.apellido,cliente_mes.placa,entradas.fecha,entradas.hora_llegada, entradas.hora_salida, pagos.horas,pagos.tota FROM pagos, cliente_mes, entradas WHERE cliente_mes.ci = '1750474049' AND entradas.estado ='Salida' AND entradas.ci = cliente_mes.ci AND pagos.id_entrada=entradas.id;
+
+
+
+buscar registros entre los clientes entre un intervalo de tiempo
+
+SELECT cliente_mes.cod_barras, cliente_mes.ci,cliente_mes.nombre,cliente_mes.apellido,cliente_mes.placa,entradas.fecha,entradas.hora_llegada, entradas.hora_salida, pagos.horas,pagos.tota FROM pagos, cliente_mes, entradas WHERE entradas.fecha BETWEEN '2019-01-21' AND '2019-01-24' AND cliente_mes.ci = '1750474049' AND entradas.estado ='Salida' AND entradas.ci = cliente_mes.ci AND pagos.id_entrada=entradas.id;
+
+
+
+
+
+
+
+
